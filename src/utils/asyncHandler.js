@@ -1,0 +1,7 @@
+asyncHandler = () =>{
+    
+}
+
+module.exports = {
+    asyncHandler 
+}
