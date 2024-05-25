@@ -1,13 +1,11 @@
 import mongoose, { Schema } from 'mongoose';
 import User from './user.model.js';
 
-
-
 const tweetSchema = new Schema({
     content: {
         type: String,
         required: true,
-        maxLength: 250
+        maxLength: 280
 
     },
     createdBy: {
