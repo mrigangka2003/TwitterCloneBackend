@@ -1,5 +1,3 @@
-const DB_NAME = twitterbackend;
+const DB_NAME = "twitterbackend";
 
-module.exports = {
-  DB_NAME,
-};
+export { DB_NAME };

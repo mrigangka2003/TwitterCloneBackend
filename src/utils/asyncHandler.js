@@ -1,7 +1,7 @@
-asyncHandler = () =>{
-    
-}
+asyncHandler = (requestHandler) => {
+  return (req, res, next) => {
+    Promise.resolve(requestHandler(res, req, next)).catch((err) => next(err));
+  };
+};
 
-module.exports = {
-    asyncHandler 
-}
+export { asyncHandler };
