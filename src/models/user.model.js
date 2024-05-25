@@ -27,6 +27,31 @@ const userSchema = new Schema(
       type: String,
       required: [true, "password is must"],
     },
+    firstName: {
+      type: String,
+      required: true,
+      maxlength: 50,
+      trim: true
+    },
+    lastName: {
+      type: String,
+      required: true,
+      maxlength: 50,
+      trim: true
+    },
+    dateOfBirth:{
+      type: Date,
+    },
+    dateOfJoining: {
+      type: Date,
+    },
+    bio: {
+      type: String,
+    },
+    status: {
+      type: Boolean,
+      default: true
+    },
     dp: {
       type: String,
     },
