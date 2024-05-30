@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
-import Tweet from "./tweet.model";
+import bcrypt from 'bcrypt' ;
+import jwt from "jsonwebtoken";
 
 const reTweetSchema = new Schema({
   originalTweet: {
