@@ -3,19 +3,20 @@ import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/fileupload.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import mongoose from "mongoose";
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { username, fullname, email, password, bio} = req.body;
+  const { username, fullName, email, password, bio} = req.body;
 
   if (
-    [fullname, email, username, password].some(
+    [fullName, email, username, password].some(
       (fields) => fields?.trim() === ""
     )
   ) {
     throw new ApiError(400, "All fields are required");
   }
 
-  const existedUser = User.findOne({
+  const existedUser = await User.findOne({
     $or: [{ username }, { email }],
   });
 
@@ -25,7 +26,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   //check the images
   const dpLocalPath = req.files?.dp[0]?.path;
-  const coverLocalPath = req.files?.cover[0]?.path;
+  const coverLocalPath = req.files?.coverPhoto[0]?.path;
 
   if (!dpLocalPath) {
     throw new ApiError(400, " Dp file is required ");
@@ -33,17 +34,22 @@ const registerUser = asyncHandler(async (req, res) => {
 
   //upload them to cloudinary
   const dp = await uploadOnCloudinary(dpLocalPath);
-  const coverImage = await uploadOnCloudinary(coverLocalPath);
+
+  if (!dp || !dp.url) {
+    throw new ApiError(500, "Failed to upload Dp to Cloudinary");
+  }
+
+  const coverPhoto = await uploadOnCloudinary(coverLocalPath);
 
   if (!dpLocalPath) {
     throw new ApiError(400, " Dp file is required ");
   }
 
-  const user = User.create({
-    fullname,
+  const user =await User.create({
+    fullName,
     dp: dp.url,
     email,
-    coverImage: coverImage?.url || "",
+    coverPhoto: coverPhoto?.url || "",
     password,
     username: username.toLowerCase(),
     bio:bio?.trim() || "" 
