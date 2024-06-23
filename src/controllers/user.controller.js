@@ -35,17 +35,13 @@ const registerUser = asyncHandler(async (req, res) => {
   //upload them to cloudinary
   const dp = await uploadOnCloudinary(dpLocalPath);
 
-  if (!dp || !dp.url) {
-    throw new ApiError(500, "Failed to upload Dp to Cloudinary");
-  }
-
   const coverPhoto = await uploadOnCloudinary(coverLocalPath);
 
-  if (!dpLocalPath) {
+  if (!dp) {
     throw new ApiError(400, " Dp file is required ");
   }
 
-  const user =await User.create({
+  const user = await User.create({
     fullName,
     dp: dp.url,
     email,
@@ -59,7 +55,7 @@ const registerUser = asyncHandler(async (req, res) => {
     "-password -refreshtoken"
   )
 
-  if(createdUser){
+  if(!createdUser){
     throw new ApiError(500, "Something went wrong while registering the user");
   }
 
