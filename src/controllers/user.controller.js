@@ -26,7 +26,12 @@ const registerUser = asyncHandler(async (req, res) => {
 
   //check the images
   const dpLocalPath = req.files?.dp[0]?.path;
-  const coverLocalPath = req.files?.coverPhoto[0]?.path;
+
+  let coverPhotoLocalPath ;
+  if(req.files && Array.isArray(req.files.coverPhoto) && req.files.coverPhoto.length>0){
+    coverPhotoLocalPath = req.files.coverPhoto[0].path ;
+  }
+
 
   if (!dpLocalPath) {
     throw new ApiError(400, " Dp file is required ");
