@@ -352,6 +352,9 @@ const updateUserDp = asyncHandler(async(req, res) => {
     )
 })
 
+
+
+
 const updateUserCoverPhoto = asyncHandler(async(req, res) => {
     const coverPhotoLocalPath = req.file?.path
 
@@ -361,7 +364,7 @@ const updateUserCoverPhoto = asyncHandler(async(req, res) => {
 
     //have to delete image from cloudinary
 
-    
+
 
     const coverPhoto = await uploadOnCloudinary(coverPhotoLocalPath)
 
