@@ -25,9 +25,6 @@ const generateAccessAndRefereshTokens = async (userId) => {
     }
 };
 
-
-
-
 const registerUser = asyncHandler(async (req, res) => {
     const { username, fullName, email, password, bio } = req.body;
 
@@ -100,9 +97,6 @@ const registerUser = asyncHandler(async (req, res) => {
         );
 });
 
-
-
-
 const loginUser = asyncHandler(async (req, res) => {
     const { username, email, password } = req.body;
 
@@ -154,9 +148,6 @@ const loginUser = asyncHandler(async (req, res) => {
         );
 });
 
-
-
-
 const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(
         req.user._id,
@@ -181,10 +172,6 @@ const logoutUser = asyncHandler(async (req, res) => {
         .clearCookie("refreshToken", options)
         .json(new ApiResponse(200, {}, "User LoggedOut"));
 });
-
-
-
-
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken =
@@ -237,10 +224,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
 });
 
-
-
-
-
 const changeCurrentPassword = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword, confPassword } = req.body;
 
@@ -272,10 +255,6 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "Password changed Succesfully !"));
 });
 
-
-
-
-
 const getCurrentUser = asyncHandler(async (req, res) => {
     return res
         .status(200)
@@ -283,9 +262,6 @@ const getCurrentUser = asyncHandler(async (req, res) => {
             new ApiResponse(200, req.user, "CURRENT USER FETCHED SUCCESSFULLY ")
         );
 });
-
-
-
 
 const updateUserDetails = asyncHandler(async (req, res) => {
     const { fullName, email, bio } = req.body;
@@ -316,84 +292,67 @@ const updateUserDetails = asyncHandler(async (req, res) => {
         );
 });
 
-
-
-
-const updateUserDp = asyncHandler(async(req, res) => {
-    const dpLocalPath = req.file?.path
+const updateUserDp = asyncHandler(async (req, res) => {
+    const dpLocalPath = req.file?.path;
 
     if (!dpLocalPath) {
-        throw new ApiError(400, "Avatar file is missing")
+        throw new ApiError(400, "Avatar file is missing");
     }
 
     //have to delete image from cloudinary
 
-    const dp = await uploadOnCloudinary(dpLocalPath)
+    const dp = await uploadOnCloudinary(dpLocalPath);
 
     if (!dp.url) {
-        throw new ApiError(400, "Error while uploading on avatar")
-        
+        throw new ApiError(400, "Error while uploading on avatar");
     }
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
-            $set:{
-                dp: dp.url
-            }
+            $set: {
+                dp: dp.url,
+            },
         },
-        {new: true}
-    ).select("-password")
+        { new: true }
+    ).select("-password");
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(200, user, "Profile image updated successfully")
-    )
-})
+        .status(200)
+        .json(new ApiResponse(200, user, "Profile image updated successfully"));
+});
 
-
-
-
-const updateUserCoverPhoto = asyncHandler(async(req, res) => {
-    const coverPhotoLocalPath = req.file?.path
+const updateUserCoverPhoto = asyncHandler(async (req, res) => {
+    const coverPhotoLocalPath = req.file?.path;
 
     if (!coverPhotoLocalPath) {
-        throw new ApiError(400, "Cover photo file is missing")
+        throw new ApiError(400, "Cover photo file is missing");
     }
 
     //have to delete image from cloudinary
 
-
-
-    const coverPhoto = await uploadOnCloudinary(coverPhotoLocalPath)
+    const coverPhoto = await uploadOnCloudinary(coverPhotoLocalPath);
 
     if (!coverPhoto.url) {
-        throw new ApiError(400, "Error while uploading on avatar")
-        
+        throw new ApiError(400, "Error while uploading on avatar");
     }
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
-            $set:{
-                coverPhoto: coverPhoto.url
-            }
+            $set: {
+                coverPhoto: coverPhoto.url,
+            },
         },
-        {new: true}
-    ).select("-password")
+        { new: true }
+    ).select("-password");
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(200, user, "Cover Photo updated successfully")
-    )
-})
+        .status(200)
+        .json(new ApiResponse(200, user, "Cover Photo updated successfully"));
+});
 
-
-
-
-
+const getUserProfile = asyncHandler(async (req, res) => {});
 
 export {
     registerUser,
@@ -404,5 +363,6 @@ export {
     getCurrentUser,
     updateUserDetails,
     updateUserDp,
-    updateUserCoverPhoto
+    updateUserCoverPhoto,
+    getUserProfile
 };
