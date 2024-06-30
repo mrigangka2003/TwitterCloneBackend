@@ -352,7 +352,17 @@ const updateUserCoverPhoto = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, user, "Cover Photo updated successfully"));
 });
 
-const getUserProfile = asyncHandler(async (req, res) => {});
+const getUserProfile = asyncHandler(async (req, res) => {
+
+    const {username} = req.params ;
+
+    if(!username?.trim()){
+        throw new ApiError(400 , "User Name is Missing") ;
+    }
+
+    //now writing the pipelines
+
+});
 
 export {
     registerUser,
