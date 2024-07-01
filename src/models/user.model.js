@@ -32,6 +32,11 @@ const userSchema = new Schema(
     dateOfBirth:{
       type: Date,
     },
+    likedTweets:[
+      {
+        type:Schema.Types.ObjectId
+      }
+    ],
     dateOfJoining: {
       type: Date,
     },

@@ -6,6 +6,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 
+
+
 const generateAccessAndRefereshTokens = async (userId) => {
     try {
         const user = await User.findById(userId);
@@ -353,16 +355,137 @@ const updateUserCoverPhoto = asyncHandler(async (req, res) => {
 });
 
 const getUserProfile = asyncHandler(async (req, res) => {
+    
+    const { username } = req.params;
 
-    const {username} = req.params ;
-
-    if(!username?.trim()){
-        throw new ApiError(400 , "User Name is Missing") ;
+    if (!username?.trim()) {
+        throw new ApiError(400, "User Name is Missing");
     }
 
-    //now writing the pipelines
+    const profile = await User.aggregate([
+        {
+            $match: {
+                username: username?.toLowerCase(),
+            },
+        },
+        {
+            $lookup: {
+                from: "follows",
+                localField: "_id",
+                foreignField: "followee",
+                as: "followers",
+            },
+        },
+        {
+            $lookup: {
+                from: "follows",
+                localField: "_id",
+                foreignField: "follower",
+                as: "followedTo",
+            },
+        },
+        {
+            $addFields: {
+                $followersCount: {
+                    $size: "$followers",
+                },
+                followedCount: {
+                    $size: "$followedTo",
+                },
+                isSubcribed: {
+                    $cond: {
+                        if: { $in: [req.user?._id, "$followers.followers"] },
+                        then: true,
+                        else: false,
+                    },
+                },
+            },
+        },
+        {
+            $project: {
+                fullName: 1,
+                username: 1,
+                followersCount: 1,
+                followedCount: 1,
+                isSubcribed,
+                dp,
+                coverPhoto,
+            },
+        },
+    ]);
 
+    if (!profile?.length) {
+        throw new ApiError(404, "Channel doesn't exists");
+    }
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                profile[0],
+                "User channel fetched successfully!"
+            )
+        );
 });
+
+const getLikedTweets = asyncHandler(async (req, res) => {
+    const user = await User.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(req.user._id),
+            },
+        },
+        {
+            $lookup: {
+                from: "tweets",
+                localField: "likedTweets",
+                foreignField: "_id",
+                as: "likedTweets",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "createdBy",
+                            foreignField: "_id",
+                            as: "createdBy",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        fullName: 1,
+                                        username: 1,
+                                        dp: 1,
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        $addFields: {
+                            owner: {
+                                $first: "$owner",
+                            },
+                        },
+                    },
+                ],
+            },
+        },
+    ]);
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                user[0].likedTweets,
+                "Watch history fetched Successfully"
+            )
+        );
+});
+
+
+
+
 
 export {
     registerUser,
@@ -374,5 +497,6 @@ export {
     updateUserDetails,
     updateUserDp,
     updateUserCoverPhoto,
-    getUserProfile
+    getUserProfile,
+    getLikedTweets,
 };
