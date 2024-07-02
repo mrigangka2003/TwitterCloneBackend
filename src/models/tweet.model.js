@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import User from './user.model.js';
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const tweetSchema = new Schema({
     content: {
@@ -10,10 +11,9 @@ const tweetSchema = new Schema({
     },
     createdBy: {
         type: Schema.Types.ObjectId,
-        required: true,
         ref: 'User'
     },
-    imageUrl: {
+    media: {
         type: String,
         trim: true
     }
@@ -21,5 +21,7 @@ const tweetSchema = new Schema({
     timestamps: true,
     versionKey: false,
 })
+
+tweetSchema.plugin(mongooseAggregatePaginate) ;
 
 export const Tweet = mongoose.model("Tweet", tweetSchema);

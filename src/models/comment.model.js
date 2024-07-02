@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import User  from "./user.model.js";
 import Tweet from './tweet.model.js' ;
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const commentSchema = new Schema({
   content: {

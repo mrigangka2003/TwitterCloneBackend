@@ -154,8 +154,8 @@ const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(
         req.user._id,
         {
-            $set: {
-                refreshToken: undefined,
+            $unset: {
+                refreshToken: 1,
             },
         },
         {
@@ -298,7 +298,7 @@ const updateUserDp = asyncHandler(async (req, res) => {
     const dpLocalPath = req.file?.path;
 
     if (!dpLocalPath) {
-        throw new ApiError(400, "Avatar file is missing");
+        throw new ApiError(400, "Dp file is missing");
     }
 
     //have to delete image from cloudinary
@@ -386,13 +386,13 @@ const getUserProfile = asyncHandler(async (req, res) => {
         },
         {
             $addFields: {
-                $followersCount: {
+                followersCount: {
                     $size: "$followers",
                 },
                 followedCount: {
                     $size: "$followedTo",
                 },
-                isSubcribed: {
+                isFollowed: {
                     $cond: {
                         if: { $in: [req.user?._id, "$followers.followers"] },
                         then: true,
@@ -407,9 +407,9 @@ const getUserProfile = asyncHandler(async (req, res) => {
                 username: 1,
                 followersCount: 1,
                 followedCount: 1,
-                isSubcribed,
-                dp,
-                coverPhoto,
+                isFollowed:1,
+                dp:1,
+                coverPhoto:1,
             },
         },
     ]);

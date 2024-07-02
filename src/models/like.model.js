@@ -2,19 +2,26 @@ import mongoose, { Schema } from 'mongoose';
 
 
 const likeSchema = new Schema({
-    tweetId: {
+    tweet: {
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'Tweet'
     },
-    userId: {
-        type: Schema.Types.ObjectId,
-        required: true,
-        ref: 'User'
-    },
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    comment:{
+        type :Schema.Types.ObjectId,
+        ref:"Comment"
+    },
+    retweet:{
+        type: Schema.Types.ObjectId,
+        ref: "reTweet"
+    },
+    likedBy :{
+        type: Schema.Types.ObjectId,
+        ref:"User"
     }
 }, {
     timestamps: true
