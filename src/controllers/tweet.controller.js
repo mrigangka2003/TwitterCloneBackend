@@ -48,44 +48,64 @@ const createTweet = asyncHandler(async (req, res) => {
     }
 });
 
-const editTweet = asyncHandler(async (req, res) => {
-    const { tweetID } = req.params;
+const updateTweet = asyncHandler(async (req, res) => {
+    const { tweetId } = req.params;
     const userId = req.user._id;
     const { content } = req.body;
 
     try {
-        const tweet = await Tweet.findById(tweetID);
+        const tweet = await Tweet.findOneAndUpdate(
+            {
+                _id: tweetId,
+                createdBy: userId,
+            },
+            {
+                $set: {
+                    content: content?.trim() || "",
+                },
+            },
+            {
+                new: true,
+            }
+        );
+
         if (!tweet) {
             throw new ApiError(404, "Tweet not found");
         }
-
-        if (tweet.createdBy.toString() !== userId.toString()) {
-            throw new ApiError(401, "Unauthorized access");
-        }
-
-        tweet.content = content?.trim() || "";
-        await tweet.save({ ValidateBeforeSave: false });
 
         return res
             .status(200)
             .json(new ApiResponse(200, tweet, "Tweet Edited Successfully !"));
     } catch (error) {
-        throw new ApiError(400, "Something Wrong while Editting tweet");
+        throw ApiError(500, error.message || "Failed to Update");
     }
 });
 
-const deleteTweet =  asyncHandler(async(req,res)=>{
+const deleteTweet = asyncHandler(async (req, res) => {
+    const { tweetID } = req.params;
+    const userId = req.user._id;
+    try {
+        const tweet = await Tweet.findOneAndDelete({
+            _id: tweetId,
+            createdBy: userId,
+        });
 
-})
+        if (!tweet) {
+            throw new ApiError(404, "Tweet Not found");
+        }
 
-const getAllTweet = asyncHandler(async(req,res)=>{
-    
-})
+        return res
+            .status(200)
+            .json(new ApiResponse(200, {}, "Tweet Deleted Successfully !"));
+    } catch (error) {
+        throw new ApiError(
+            500,
+            error.message || "Unable to delete Tweet try again later !"
+        );
+    }
+});
 
-export { 
-    createTweet,
-    editTweet,
-    deleteTweet,
-    getAllTweet
+const getAllTweet = asyncHandler(async (req, res) => {
+});
 
-};
+export { createTweet, updateTweet, deleteTweet, getAllTweet };
