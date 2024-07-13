@@ -82,7 +82,7 @@ const updateTweet = asyncHandler(async (req, res) => {
 });
 
 const deleteTweet = asyncHandler(async (req, res) => {
-    const { tweetID } = req.params;
+    const { tweetId } = req.params;
     const userId = req.user._id;
     try {
         const tweet = await Tweet.findOneAndDelete({
@@ -105,7 +105,21 @@ const deleteTweet = asyncHandler(async (req, res) => {
     }
 });
 
-const getAllTweet = asyncHandler(async (req, res) => {
+const getUserTweet = asyncHandler(async (req, res) => {
+    const {user} = req.params ;
+
+    try {
+        const tweet = await Tweet.find({createdBy:user}).populate('createdBy','usename') ;
+        if(!tweet){
+            throw new ApiError(404,"No Tweet found for this user")
+        }
+    
+        return res.
+        status(200).
+        json(new ApiResponse(200,tweet,"User Tweets"))
+    } catch (error) {
+        throw ApiError(500, error.message || "Something went Wrong");
+    }
 });
 
-export { createTweet, updateTweet, deleteTweet, getAllTweet };
+export { createTweet, updateTweet, deleteTweet, getUserTweet };
