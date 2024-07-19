@@ -52,19 +52,26 @@ const toggleTweetlike = asyncHandler(async (req, res) => {
 });
 
 
-//have to do it
-// const getTweetLike = asyncHandler(async(req,res)=>{
-//     const {tweetId} = req.params;
+const getTweetLike = asyncHandler(async(req,res)=>{
+    const {tweetId} = req.params;
 
-//     try {
-        
-//         const tweet = await Tweet.findOne(tweetId).populate()
+    try {
+        const likes = await Tweet.findOne(tweetId).populate('user' , 'username') ;
 
-//     } catch (error) {
-//         throw new ApiError(500,"Something went Wrong") ;
-//     }
-// })
+        return res
+        .status(200)
+        .json(
+            new ApiResponse(200, likes, "Likes count")
+        )
+
+    } catch (error) {
+        throw new ApiError(500,"Something went Wrong") ;
+    }
+});
+
+
 
 export {
-    toggleTweetlike 
+    toggleTweetlike,
+    getTweetLike,
 }
